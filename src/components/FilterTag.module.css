@@ -1,0 +1,28 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
+  font-size: var(--font-size-xs);
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.6;
+}
+
+.tag:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.tag.active {
+  background: var(--color-tag-bg-active);
+  color: var(--color-tag-text-active);
+  border-color: var(--color-tag-bg-active);
+  font-weight: 600;
+}

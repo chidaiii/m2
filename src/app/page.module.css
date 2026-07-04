@@ -1,0 +1,22 @@
+.main {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--layout-padding);
+}
+
+.header {
+  margin-bottom: var(--space-2xl);
+  text-align: center;
+}
+
+.siteTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.siteDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
