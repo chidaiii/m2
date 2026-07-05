@@ -36,6 +36,48 @@ export function getThumbnailFallbackUrl(videoId: string): string {
 }
 
 /**
+ * YouTube Data API v3 を使い、動画IDのリストからYouTube投稿日を一括取得する。
+ * 50件ずつバッチ処理する（APIの上限）。
+ * 失敗した動画はスキップし、取得できた分のみ返す。
+ */
+export async function fetchYouTubePublishDates(
+  videoIds: string[],
+  apiKey: string
+): Promise<Map<string, string>> {
+  const dateMap = new Map<string, string>();
+  const BATCH_SIZE = 50;
+
+  for (let i = 0; i < videoIds.length; i += BATCH_SIZE) {
+    const batch = videoIds.slice(i, i + BATCH_SIZE);
+    const params = new URLSearchParams({
+      part: "snippet",
+      id: batch.join(","),
+      key: apiKey,
+      fields: "items(id,snippet/publishedAt)",
+    });
+
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?${params}`
+      );
+      if (!res.ok) continue;
+
+      const data = (await res.json()) as {
+        items: Array<{ id: string; snippet: { publishedAt: string } }>;
+      };
+
+      for (const item of data.items) {
+        dateMap.set(item.id, item.snippet.publishedAt);
+      }
+    } catch {
+      // バッチ失敗時はスキップして続行
+    }
+  }
+
+  return dateMap;
+}
+
+/**
  * YouTube oEmbed APIを使って動画タイトルを取得する（APIキー不要）。
  *
  * 設計判断：タイトルをビルド時（getWorks内）に解決してHTMLに埋め込む方式を採用。

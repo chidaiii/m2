@@ -5,8 +5,15 @@
 }
 
 .header {
+  position: relative;
   margin-bottom: var(--space-2xl);
   text-align: center;
+}
+
+.headerAction {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .siteTitle {

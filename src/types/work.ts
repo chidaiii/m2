@@ -16,4 +16,6 @@ export interface Work {
   type: TagType[];
   style: TagStyle[];
   genre: TagGenre[];
+  // ビルド時にYouTube Data APIから取得したYouTube投稿日（ソート用）
+  youtubePublishedAt?: string;
 }
