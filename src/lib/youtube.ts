@@ -78,6 +78,54 @@ export async function fetchYouTubePublishDates(
 }
 
 /**
+ * YouTube Data API v3 を使い、動画IDのリストのうち現在も視聴可能なもの
+ * （削除・非公開になっていないもの）を判定する。
+ * 50件ずつバッチ処理する（APIの上限）。
+ * 削除済み・非公開の動画はレスポンスに含まれないため、
+ * 返り値のSetに入っていないIDは視聴不可と判断できる。
+ * バッチ失敗時は安全側に倒し、そのバッチの動画IDは「視聴可能」とみなす
+ * （API障害で誤って一括非公開化されるのを防ぐため）。
+ */
+export async function checkVideoAvailability(
+  videoIds: string[],
+  apiKey: string
+): Promise<Set<string>> {
+  const availableIds = new Set<string>();
+  const BATCH_SIZE = 50;
+
+  for (let i = 0; i < videoIds.length; i += BATCH_SIZE) {
+    const batch = videoIds.slice(i, i + BATCH_SIZE);
+    const params = new URLSearchParams({
+      part: "id",
+      id: batch.join(","),
+      key: apiKey,
+      fields: "items(id)",
+    });
+
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?${params}`
+      );
+      if (!res.ok) {
+        // API障害時は安全側に倒し、このバッチは全件「視聴可能」扱いにする
+        batch.forEach((id) => availableIds.add(id));
+        continue;
+      }
+
+      const data = (await res.json()) as { items: Array<{ id: string }> };
+      for (const item of data.items) {
+        availableIds.add(item.id);
+      }
+    } catch {
+      // 通信失敗時も安全側に倒し、このバッチは全件「視聴可能」扱いにする
+      batch.forEach((id) => availableIds.add(id));
+    }
+  }
+
+  return availableIds;
+}
+
+/**
  * YouTube oEmbed APIを使って動画タイトルを取得する（APIキー不要）。
  *
  * 設計判断：タイトルをビルド時（getWorks内）に解決してHTMLに埋め込む方式を採用。

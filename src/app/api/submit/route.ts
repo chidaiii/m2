@@ -81,8 +81,27 @@ export async function POST(req: NextRequest) {
   }
 
   const client = createClient({ serviceDomain, apiKey: writeApiKey });
+  const normalizedUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
   try {
+    // 重複チェック: 同じ動画IDが既に登録されていないか確認
+    // （import-playlist.ts と同様、youtubeUrl の完全一致で判定）
+    const existing = await client.getList<{ youtubeUrl: string }>({
+      endpoint: "works",
+      queries: {
+        filters: `youtubeUrl[equals]${normalizedUrl}`,
+        fields: "youtubeUrl",
+        limit: 1,
+      },
+    });
+
+    if (existing.contents.length > 0) {
+      return NextResponse.json(
+        { error: "この動画は既に登録されています" },
+        { status: 409 }
+      );
+    }
+
     /**
      * isDraft: true で下書き保存する。
      * microCMS 管理画面に「下書き」として溜まり、管理者が確認・承認後に公開できる。
@@ -91,7 +110,7 @@ export async function POST(req: NextRequest) {
     await client.create({
       endpoint: "works",
       content: {
-        youtubeUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        youtubeUrl: normalizedUrl,
         title: "", // タイトルは承認時に管理者が入力する
         type: Array.isArray(type) ? type : [],
         style: Array.isArray(style) ? style : [],

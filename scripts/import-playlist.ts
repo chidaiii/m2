@@ -8,12 +8,14 @@
  *   1. 指定した再生リストから全動画を取得（ページネーション対応）
  *   2. microCMSの既存データと照合し、重複をスキップ
  *   3. 新規動画のみ microCMS に登録
+ *   4. microCMSに登録済みの全動画についてYouTube上での視聴可否を確認し、
+ *      削除・非公開になっている動画は下書きに戻す（サイトから非表示化）
  *
- * 再実行すると新規動画だけが追加される。既存登録済みはスキップされる。
+ * 再実行すると新規動画だけが追加され、視聴不可になった動画は下書きに戻される。
  */
 
 import { createClient } from "microcms-js-sdk";
-import { extractVideoId } from "../src/lib/youtube.js";
+import { extractVideoId, checkVideoAvailability } from "../src/lib/youtube.js";
 
 // ---- 環境変数 ----
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -125,35 +127,40 @@ async function fetchPlaylistItems(
   return items;
 }
 
-// ---- microCMS: 登録済み動画ID の全件取得 ----
+// ---- microCMS: 登録済み動画 の全件取得 ----
+
+interface ExistingWork {
+  id: string;
+  videoId: string;
+}
 
 /**
- * microCMS の works に登録済みの YouTube 動画ID を全件取得して Set で返す。
+ * microCMS の works に登録済み（公開済み）の動画を全件取得する。
  * offset ベースのページネーションで全件走査する。
  */
-async function fetchExistingVideoIds(
+async function fetchExistingWorks(
   client: ReturnType<typeof createClient>
-): Promise<Set<string>> {
-  const existingVideoIds = new Set<string>();
+): Promise<ExistingWork[]> {
+  const existingWorks: ExistingWork[] = [];
   let offset = 0;
   const limit = 100;
 
   while (true) {
-    const data = await client.getList<{ youtubeUrl: string }>({
+    const data = await client.getList<{ id: string; youtubeUrl: string }>({
       endpoint: "works",
-      queries: { limit, offset, fields: "youtubeUrl" },
+      queries: { limit, offset, fields: "id,youtubeUrl" },
     });
 
     for (const work of data.contents) {
       const videoId = extractVideoId(work.youtubeUrl);
-      if (videoId) existingVideoIds.add(videoId);
+      if (videoId) existingWorks.push({ id: work.id, videoId });
     }
 
     if (offset + limit >= data.totalCount) break;
     offset += limit;
   }
 
-  return existingVideoIds;
+  return existingWorks;
 }
 
 // ---- メイン処理 ----
@@ -183,37 +190,36 @@ async function main() {
   });
 
   // Step 1: YouTube 再生リストの全動画を取得
-  console.log("\n[1/4] YouTube 再生リストを取得中...");
+  console.log("\n[1/6] YouTube 再生リストを取得中...");
   const playlistItems = await fetchPlaylistItems(
     YOUTUBE_API_KEY,
     YOUTUBE_PLAYLIST_ID
   );
   console.log(`  → ${playlistItems.length} 件の動画を取得しました`);
 
-  // Step 2: microCMS の登録済み動画ID を取得
-  console.log("\n[2/4] microCMS の既存データを確認中...");
-  const existingVideoIds = await fetchExistingVideoIds(client);
-  console.log(`  → 登録済み: ${existingVideoIds.size} 件`);
+  // Step 2: microCMS の登録済み動画を取得
+  console.log("\n[2/6] microCMS の既存データを確認中...");
+  const existingWorks = await fetchExistingWorks(client);
+  const existingVideoIds = new Set(existingWorks.map((w) => w.videoId));
+  console.log(`  → 登録済み: ${existingWorks.length} 件`);
 
   // Step 3: 新規動画の抽出（動画IDベースで重複判定）
-  console.log("\n[3/4] 重複チェック中...");
+  console.log("\n[3/6] 重複チェック中...");
   const newItems = playlistItems.filter(
     (item) => !existingVideoIds.has(item.videoId)
   );
   const skipCount = playlistItems.length - newItems.length;
   console.log(`  → 新規: ${newItems.length} 件 / スキップ: ${skipCount} 件`);
 
-  if (newItems.length === 0) {
-    console.log("\n新規登録する動画はありませんでした。");
-    console.log(`スキップ: ${skipCount} 件（登録済み）`);
-    return;
-  }
-
   // Step 4: microCMS に新規登録
-  console.log("\n[4/4] microCMS に登録中...");
+  console.log("\n[4/6] microCMS に登録中...");
 
   let successCount = 0;
   const failures: Array<{ title: string; error: string }> = [];
+
+  if (newItems.length === 0) {
+    console.log("  → 新規登録する動画はありませんでした。");
+  }
 
   for (let i = 0; i < newItems.length; i++) {
     const item = newItems[i];
@@ -248,14 +254,75 @@ async function main() {
     }
   }
 
+  // Step 5: 登録済み動画のうち、YouTube上で視聴できなくなったものを判定
+  console.log("\n[5/6] 登録済み動画の視聴可否を確認中...");
+  const availableIds = await checkVideoAvailability(
+    existingWorks.map((w) => w.videoId),
+    YOUTUBE_API_KEY
+  );
+  const unavailableWorks = existingWorks.filter(
+    (w) => !availableIds.has(w.videoId)
+  );
+  console.log(
+    `  → 視聴不可: ${unavailableWorks.length} 件 / 視聴可能: ${existingWorks.length - unavailableWorks.length} 件`
+  );
+
+  // Step 6: 視聴不可の動画を下書きに戻す（サイトから非表示化）
+  console.log("\n[6/6] 視聴不可の動画を下書きに戻しています...");
+
+  let unpublishCount = 0;
+  const unpublishFailures: Array<{ id: string; error: string }> = [];
+
+  if (unavailableWorks.length === 0) {
+    console.log("  → 対象の動画はありませんでした。");
+  }
+
+  for (let i = 0; i < unavailableWorks.length; i++) {
+    const work = unavailableWorks[i];
+
+    try {
+      await client.update({
+        endpoint: "works",
+        contentId: work.id,
+        content: {},
+        isDraft: true,
+      });
+
+      console.log(
+        `  [${i + 1}/${unavailableWorks.length}] 下書き化完了: ${work.videoId}`
+      );
+      unpublishCount++;
+
+      if (i < unavailableWorks.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_MS));
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(
+        `  [${i + 1}/${unavailableWorks.length}] 下書き化失敗: ${work.videoId}`
+      );
+      console.error(`    エラー: ${message}`);
+      unpublishFailures.push({ id: work.id, error: message });
+    }
+  }
+
   // 結果サマリー
   console.log("\n=== 完了 ===");
-  console.log(`  新規登録: ${successCount} 件`);
-  console.log(`  スキップ: ${skipCount} 件（登録済み）`);
-  if (failures.length > 0) {
-    console.log(`  失敗:     ${failures.length} 件`);
-    for (const f of failures) {
-      console.log(`    - ${f.title}: ${f.error}`);
+  console.log(`  新規登録:     ${successCount} 件`);
+  console.log(`  スキップ:     ${skipCount} 件（登録済み）`);
+  console.log(`  下書き化:     ${unpublishCount} 件（視聴不可）`);
+  if (failures.length > 0 || unpublishFailures.length > 0) {
+    if (failures.length > 0) {
+      console.log(`  登録失敗:     ${failures.length} 件`);
+      for (const f of failures) {
+        console.log(`    - ${f.title}: ${f.error}`);
+      }
+    }
+    if (unpublishFailures.length > 0) {
+      console.log(`  下書き化失敗: ${unpublishFailures.length} 件`);
+      for (const f of unpublishFailures) {
+        console.log(`    - ${f.id}: ${f.error}`);
+      }
     }
     process.exit(1);
   }
