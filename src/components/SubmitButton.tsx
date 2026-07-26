@@ -1,5 +1,5 @@
 /**
- * 右上に常設する「投稿」ボタン。
+ * 右上に常設する投稿ボタン。
  *
  * page.tsx が Server Component のままでいられるよう、
  * モーダルの開閉 state はこの Client Component に閉じ込めている。
@@ -8,6 +8,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import SubmitModal from "./SubmitModal";
 import styles from "./SubmitButton.module.css";
 
@@ -21,7 +22,8 @@ export default function SubmitButton() {
         onClick={() => setIsOpen(true)}
         type="button"
       >
-        + 投稿
+        <span>掲載する</span>
+        <Image src="/icon-arrow.svg" alt="" width={7} height={13} />
       </button>
       {isOpen && <SubmitModal onClose={() => setIsOpen(false)} />}
     </>

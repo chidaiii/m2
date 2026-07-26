@@ -1,11 +1,12 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--grid-gap);
+  gap: var(--grid-gap) var(--grid-gap);
+  row-gap: var(--grid-gap-y);
 }
 
 /* タブレット: 2カラム */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -16,47 +17,4 @@
   .grid {
     grid-template-columns: 1fr;
   }
-}
-
-.empty {
-  text-align: center;
-  color: var(--color-text-secondary);
-  padding: var(--space-2xl) 0;
-  font-size: var(--font-size-sm);
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xl) 0;
-}
-
-.pageBtn {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 var(--space-sm);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  transition: color var(--transition-fast), background var(--transition-fast);
-}
-
-.pageBtn:hover:not(:disabled) {
-  color: var(--color-text-primary);
-  background: var(--color-surface-hover);
-}
-
-.pageBtn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.pageBtnActive {
-  color: var(--color-tag-text-active);
-  background: var(--color-accent);
-  border-color: var(--color-accent);
 }

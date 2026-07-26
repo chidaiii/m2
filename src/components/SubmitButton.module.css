@@ -1,16 +1,42 @@
 .button {
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  font-family: inherit;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: 40px;
+  padding: 0 var(--space-lg);
+  background: var(--color-accent);
+  color: #ffffff;
+  font-family: var(--font-family-base);
+  font-weight: 700;
   font-size: var(--font-size-sm);
-  transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  text-transform: uppercase;
+  transition: opacity var(--transition-fast);
+}
+
+.button::before,
+.button::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+}
+
+.button::before {
+  background: var(--color-bg);
+  transform: translate(-200%, 0);
+}
+
+.button::after {
+  background: var(--color-accent);
+  transform: translate(-100%, 0);
 }
 
 .button:hover {
-  color: var(--color-text-primary);
-  background: var(--color-surface-hover);
-  border-color: var(--color-text-secondary);
+  opacity: 0.85;
 }

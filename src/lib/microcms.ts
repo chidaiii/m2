@@ -12,16 +12,23 @@ export async function getWorks(): Promise<Work[]> {
 
   const client = createClient({ serviceDomain, apiKey });
 
-  const data = await client.getList<Work>({
-    endpoint: "works",
-    queries: {
-      limit: 100,
-    },
-  });
+  // offsetベースのページネーションで全件取得する（100件を超えても取りこぼさない）
+  const allContents: Work[] = [];
+  let offset = 0;
+  const limit = 100;
+  while (true) {
+    const data = await client.getList<Work>({
+      endpoint: "works",
+      queries: { limit, offset },
+    });
+    allContents.push(...data.contents);
+    if (offset + limit >= data.totalCount) break;
+    offset += limit;
+  }
 
   // タイトル補完（microCMSのtitleが空の場合はoEmbedで取得）
   let works = await Promise.all(
-    data.contents.map(async (work) => {
+    allContents.map(async (work) => {
       if (!work.title) {
         const title = await fetchYouTubeTitle(work.youtubeUrl);
         return { ...work, title };

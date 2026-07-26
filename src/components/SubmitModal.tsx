@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import { extractVideoId } from "@/lib/youtube";
 import { TAG_CATEGORIES } from "@/lib/tags";
+import Modal from "./Modal";
+import Tag from "./Tag";
 import styles from "./SubmitModal.module.css";
 
 interface Props {
@@ -14,27 +17,10 @@ type TagState = Record<string, string[]>;
 const INITIAL_TAGS: TagState = { type: [], style: [], genre: [] };
 
 export default function SubmitModal({ onClose }: Props) {
-  const overlayRef = useRef<HTMLDivElement>(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [urlError, setUrlError] = useState("");
   const [selectedTags, setSelectedTags] = useState<TagState>(INITIAL_TAGS);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) onClose();
-  };
 
   const toggleTag = (category: string, tag: string) => {
     setSelectedTags((prev) => {
@@ -83,87 +69,82 @@ export default function SubmitModal({ onClose }: Props) {
   };
 
   return (
-    <div
-      className={styles.overlay}
-      ref={overlayRef}
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      aria-label="作品を投稿"
-    >
-      <div className={styles.modal}>
-        <button
-          className={styles.closeButton}
-          onClick={onClose}
-          aria-label="閉じる"
-          type="button"
-        >
-          ×
-        </button>
-
-        <h2 className={styles.title}>作品を投稿</h2>
-        <p className={styles.description}>
-          審査後に公開されます。タイトルは管理者が設定します。
-        </p>
-
-        <form onSubmit={handleSubmit} noValidate>
-          {/* YouTube URL */}
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="submit-url">
-              YouTube URL <span className={styles.required}>*</span>
-            </label>
-            <input
-              id="submit-url"
-              type="url"
-              className={`${styles.input}${urlError ? ` ${styles.inputError}` : ""}`}
-              placeholder="https://www.youtube.com/watch?v=..."
-              value={youtubeUrl}
-              onChange={(e) => {
-                setYoutubeUrl(e.target.value);
-                if (urlError) validateUrl(e.target.value);
-              }}
-              onBlur={(e) => validateUrl(e.target.value)}
-              autoComplete="off"
-            />
-            {urlError && (
-              <p className={styles.errorText} role="alert">
-                {urlError}
-              </p>
-            )}
+    <Modal onClose={onClose} ariaLabel="作品を投稿" className={styles.panel}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.logoRow}>
+            <Image src="/logo-blue.svg" alt="" width={168} height={24} />
+            <span className={styles.headerTo}>に</span>
           </div>
-
-          {/* タグ選択（tags.ts を単一ソースとして参照） */}
-          {TAG_CATEGORIES.map((category) => (
-            <div key={category.key} className={styles.field}>
-              <p className={styles.label}>{category.label}</p>
-              <div className={styles.tagRow}>
-                {category.options.map((tag) => {
-                  const isActive = (selectedTags[category.key] ?? []).includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      className={`${styles.tagBtn}${isActive ? ` ${styles.tagBtnActive}` : ""}`}
-                      onClick={() => toggleTag(category.key, tag)}
-                      aria-pressed={isActive}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "送信中..." : "投稿する"}
-          </button>
-        </form>
+          <h2 className={styles.headerTitle}>掲載する</h2>
+        </div>
+        <div className={styles.headerDivider} aria-hidden="true" />
+        <p className={styles.headerDescription}>
+          掲載を希望される作品がございましたら、以下のフォームよりご推薦ください。自薦／他薦を問いません。いただいた掲載希望作品については、管理人の承認のもと掲載されます。掲載作品はYouTubeに投稿された公式MVを中心に取り扱っており、自主制作やcover作品などは基本的には対象としていません。
+        </p>
+        <div className={styles.headerAccentBar} aria-hidden="true" />
       </div>
-    </div>
+
+      <form className={styles.body} onSubmit={handleSubmit} noValidate>
+        <div className={styles.field}>
+          <p className={styles.fieldLabel}>URL</p>
+          <input
+            id="submit-url"
+            type="url"
+            className={`${styles.input}${urlError ? ` ${styles.inputError}` : ""}`}
+            placeholder="https://www.youtube.com/watch?v="
+            value={youtubeUrl}
+            onChange={(e) => {
+              setYoutubeUrl(e.target.value);
+              if (urlError) validateUrl(e.target.value);
+            }}
+            onBlur={(e) => validateUrl(e.target.value)}
+            autoComplete="off"
+          />
+          {urlError && (
+            <p className={styles.errorText} role="alert">
+              {urlError}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.field}>
+          <p className={styles.fieldLabel}>TAG</p>
+          <div className={styles.tagGroups}>
+            {TAG_CATEGORIES.map((category) => (
+              <div key={category.key} className={styles.tagGroup}>
+                <p className={styles.tagGroupLabel}>▪{category.label}</p>
+                <div className={styles.tagRow}>
+                  {category.options.map((tag) => (
+                    <Tag
+                      key={tag}
+                      label={tag}
+                      isActive={(selectedTags[category.key] ?? []).includes(tag)}
+                      onClick={() => toggleTag(category.key, tag)}
+                      variant="on-accent"
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className={styles.submitBtn}
+          disabled={isSubmitting}
+        >
+          <span>{isSubmitting ? "送信中..." : "送信する"}</span>
+          <Image
+            src="/icon-arrow-blue.svg"
+            alt=""
+            width={7}
+            height={13}
+            className={styles.submitArrow}
+          />
+        </button>
+      </form>
+    </Modal>
   );
 }

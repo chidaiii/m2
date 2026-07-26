@@ -1,0 +1,43 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-sm);
+  height: 20px;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast), background var(--transition-fast),
+    color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tag:hover {
+  opacity: 0.75;
+}
+
+/* サイドバー（黒背景上）: 未選択=枠なし白文字 / 選択=アクセント背景+白文字 */
+.onDark {
+  border: none;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
+}
+
+.onDark.active {
+  background: var(--color-tag-bg-active);
+  color: var(--color-tag-text-active);
+}
+
+/* 投稿モーダル（アクセント背景上）: 未選択=半透明白枠 / 選択=白背景+アクセント文字 */
+.onAccent {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.onAccent.active {
+  border-color: var(--color-tag-bg-on-accent);
+  background: var(--color-tag-bg-on-accent);
+  color: var(--color-tag-text-on-accent);
+}

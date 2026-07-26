@@ -8,6 +8,7 @@ import {
   getThumbnailUrl,
   getThumbnailFallbackUrl,
 } from "@/lib/youtube";
+import { formatDate } from "@/lib/date";
 import styles from "./WorkCard.module.css";
 
 interface Props {
@@ -20,6 +21,7 @@ export default function WorkCard({ work, onClick }: Props) {
   const [imgSrc, setImgSrc] = useState(
     videoId ? getThumbnailUrl(videoId) : ""
   );
+  const dateSource = work.youtubePublishedAt ?? work.publishedAt;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -56,7 +58,10 @@ export default function WorkCard({ work, onClick }: Props) {
           <span className={styles.playIcon}>▶</span>
         </div>
       </div>
-      {work.title && <p className={styles.title}>{work.title}</p>}
+      <div className={styles.info}>
+        {work.title && <p className={styles.title}>{work.title}</p>}
+        {dateSource && <p className={styles.date}>{formatDate(dateSource)}</p>}
+      </div>
     </article>
   );
 }
