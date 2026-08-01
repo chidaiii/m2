@@ -9,9 +9,10 @@ interface Props {
   ariaLabel: string;
   className?: string;
   children: React.ReactNode;
+  disableOverlayClose?: boolean;
 }
 
-export default function Modal({ onClose, ariaLabel, className, children }: Props) {
+export default function Modal({ onClose, ariaLabel, className, children, disableOverlayClose }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function Modal({ onClose, ariaLabel, className, children }: Props
   }, [onClose]);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // オーバーレイ自体（背景）をクリックした場合のみ閉じる
+    if (disableOverlayClose) return;
     if (e.target === overlayRef.current) onClose();
   };
 
@@ -47,7 +48,7 @@ export default function Modal({ onClose, ariaLabel, className, children }: Props
         aria-label="閉じる"
         type="button"
       >
-        <Image src="/icon-close.svg" alt="" width={96} height={96} />
+        <Image src="/icon-close.svg" alt="" width={96} height={96} draggable={false} />
       </button>
       <div className={`${styles.modal}${className ? ` ${className}` : ""}`}>
         {children}

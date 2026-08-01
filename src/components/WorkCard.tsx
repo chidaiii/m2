@@ -55,7 +55,13 @@ export default function WorkCard({ work, onClick }: Props) {
           <div className={styles.noImage} />
         )}
         <div className={styles.playOverlay} aria-hidden="true">
-          <span className={styles.playIcon}>▶</span>
+          <Image
+            src="/play.svg"
+            alt=""
+            width={32}
+            height={32}
+            className={styles.playIcon}
+          />
         </div>
       </div>
       <div className={styles.info}>

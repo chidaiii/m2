@@ -37,9 +37,9 @@
   --font-size-lg: 18px;
   --font-size-xl: 24px;
   --font-size-2xl: 32px;
-  --font-family-base: var(--font-inter), "Helvetica Neue", Arial,
-    "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-  --font-family-mono: var(--font-dotgothic16), var(--font-family-base);
+  --font-family-base: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  --font-family-mono: "DotGothic16", var(--font-family-base);
+  --font-family-latin: "Inter", var(--font-family-base);
 
   /* Border radius — sharp corners throughout the current design */
   --radius-sm: 0px;
@@ -55,7 +55,7 @@
   --sidebar-width: 240px;
   --layout-max-width: 1280px;
   --layout-padding: var(--space-lg);
-  --grid-gap: var(--space-md);
+  --grid-gap: var(--space-lg);
   --grid-gap-y: var(--space-lg);
 }
 

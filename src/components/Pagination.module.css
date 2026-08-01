@@ -54,18 +54,28 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  transition: opacity var(--transition-fast);
+  transition: transform var(--transition-fast);
 }
 
 .arrowBtn:disabled {
-  opacity: 0.3;
+  opacity: 0;
   cursor: default;
 }
 
-.arrowPrev {
-  transform: rotate(-90deg);
+.arrowBtnPrev:not(:disabled):hover {
+  transform: translateX(-4px);
 }
 
-.arrowNext {
-  transform: rotate(90deg);
+.arrowBtnNext:not(:disabled):hover {
+  transform: translateX(4px);
 }
+
+.arrowWrapPrev,
+.arrowWrapNext {
+  display: block;
+  width: 8px;
+  height: 16px;
+}
+
+.arrowWrapPrev { transform: rotate(-90deg); }
+.arrowWrapNext { transform: rotate(90deg); }

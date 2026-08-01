@@ -10,15 +10,22 @@ interface Props {
 
 type PageItem = number | "…";
 
-/** 現在ページ周辺 + 先頭/末尾のみを残し、間を省略記号でつなぐ */
 function getPageItems(current: number, total: number): PageItem[] {
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
+  if (total <= 1) return [1];
 
-  const keep = new Set<number>([1, 2, 3, total, current]);
-  if (current > 1) keep.add(current - 1);
-  if (current < total) keep.add(current + 1);
+  const keep = new Set<number>([1, total]);
+
+  if (current === 1) {
+    keep.add(2);
+    if (total >= 3) keep.add(3);
+  } else if (current === total) {
+    keep.add(total - 1);
+    if (total >= 3) keep.add(total - 2);
+  } else {
+    keep.add(current - 1);
+    keep.add(current);
+    keep.add(current + 1);
+  }
 
   const sorted = Array.from(keep)
     .filter((n) => n >= 1 && n <= total)
@@ -34,6 +41,32 @@ function getPageItems(current: number, total: number): PageItem[] {
   return items;
 }
 
+function ArrowButton({
+  onClick,
+  disabled,
+  direction,
+  ariaLabel,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+  direction: "prev" | "next";
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      className={`${styles.arrowBtn} ${direction === "prev" ? styles.arrowBtnPrev : styles.arrowBtnNext}`}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      type="button"
+    >
+      <span className={direction === "prev" ? styles.arrowWrapPrev : styles.arrowWrapNext}>
+        <Image src="/icon-arrow.svg" alt="" width={8} height={16} />
+      </span>
+    </button>
+  );
+}
+
 export default function Pagination({
   currentPage,
   totalPages,
@@ -46,21 +79,12 @@ export default function Pagination({
     <div className={styles.pagination}>
       <p className={styles.label}>{label}</p>
       <div className={styles.controls}>
-        <button
-          className={styles.arrowBtn}
+        <ArrowButton
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          aria-label="前のページ"
-          type="button"
-        >
-          <Image
-            src="/icon-arrow.svg"
-            alt=""
-            width={7}
-            height={13}
-            className={styles.arrowPrev}
-          />
-        </button>
+          direction="prev"
+          ariaLabel="前のページ"
+        />
         {items.map((item, i) =>
           item === "…" ? (
             <span key={`ellipsis-${i}`} className={styles.ellipsis}>
@@ -79,21 +103,12 @@ export default function Pagination({
             </button>
           )
         )}
-        <button
-          className={styles.arrowBtn}
+        <ArrowButton
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          aria-label="次のページ"
-          type="button"
-        >
-          <Image
-            src="/icon-arrow.svg"
-            alt=""
-            width={7}
-            height={13}
-            className={styles.arrowNext}
-          />
-        </button>
+          direction="next"
+          ariaLabel="次のページ"
+        />
       </div>
     </div>
   );

@@ -53,8 +53,8 @@
   flex: 1;
   font-family: var(--font-family-base);
   font-weight: 700;
-  font-size: var(--font-size-xs);
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.8;
   color: var(--color-accent);
 }
 
@@ -68,27 +68,97 @@
 }
 
 .body {
-  padding: var(--space-xl);
+  padding: 36px var(--space-xl) var(--space-xl);
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-xl);
+}
+
+.leftCol {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-md);
+  flex: 1;
+  min-width: 0;
+}
+
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 12px;
   width: 100%;
 }
 
-.fieldLabel {
-  font-family: var(--font-family-base);
+.preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+}
+
+.previewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.previewLabel {
+  font-family: var(--font-family-latin);
   font-weight: 700;
-  font-size: var(--font-size-xl);
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.previewEmpty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.previewEmptyIcon {
+  opacity: 0.25;
+}
+
+.previewEmptyText {
+  font-family: var(--font-family-latin);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.08em;
+}
+
+.previewThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fieldLabel {
+  font-family: var(--font-family-latin);
+  font-weight: 700;
+  font-size: 20px;
   text-transform: uppercase;
   color: #ffffff;
   padding-bottom: var(--space-sm);
   border-bottom: 1px solid #ffffff;
+}
+
+.fieldLabelSm {
+  font-size: 18px;
 }
 
 .input {
@@ -97,8 +167,8 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
   color: #ffffff;
   font-family: var(--font-family-base);
-  font-weight: 700;
-  font-size: var(--font-size-xs);
+  font-weight: 500;
+  font-size: 10px;
   padding: var(--space-sm);
   outline: none;
   transition: border-color var(--transition-fast);
@@ -125,20 +195,20 @@
 .tagGroups {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 12px;
 }
 
 .tagGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 4px;
   width: 100%;
 }
 
 .tagGroupLabel {
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-latin);
   font-weight: 700;
-  font-size: var(--font-size-sm);
+  font-size: 12px;
   text-transform: uppercase;
   color: #ffffff;
 }
@@ -146,52 +216,89 @@
 .tagRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
 }
 
-.submitBtn {
+
+.validationNote {
+  position: absolute;
+  left: var(--space-xl);
+  bottom: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family-base);
+  font-size: 10px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.submitWrapper {
   position: absolute;
   right: 0;
   bottom: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: #ffffff;
-  color: var(--color-accent);
-  font-family: var(--font-family-base);
-  font-weight: 700;
-  font-size: var(--font-size-lg);
-  text-transform: uppercase;
-  padding: var(--space-sm) var(--space-lg);
-  transition: opacity var(--transition-fast);
+  width: max-content;
 }
 
-.submitBtn::before,
-.submitBtn::after {
+/* Decorative 8×8 square at top-left */
+.submitWrapper::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  width: 6px;
-  height: 6px;
-}
-
-.submitBtn::before {
-  background: var(--color-accent);
-  transform: translate(-200%, 0);
-}
-
-.submitBtn::after {
+  width: 8px;
+  height: 8px;
   background: #ffffff;
-  transform: translate(-100%, 0);
+  transition: background var(--transition-fast), opacity var(--transition-fast);
+}
+
+.submitWrapper:has(.submitBtn:not(:disabled):hover)::before {
+  opacity: 0.85;
+}
+
+/* Invalid (not yet submittable) state */
+.submitWrapper[data-invalid]::before {
+  background: #b0b0b0;
+}
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 48px;
+  padding: 0 var(--space-lg);
+  margin-left: 8px;
+  background: #ffffff;
+  color: var(--color-accent);
+  font-family: var(--font-family-latin);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  /* Clip 8×8 notch from top-left corner */
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px, 8px 8px);
+  transition: background var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast);
 }
 
 .submitBtn:disabled {
-  opacity: 0.6;
   cursor: default;
+  opacity: 0.6;
 }
 
-.submitBtn:not(:disabled):hover {
+.submitWrapper:not([data-invalid]) .submitBtn:not(:disabled):hover {
   opacity: 0.85;
+}
+
+.submitWrapper[data-invalid] .submitBtn {
+  background: #b0b0b0;
+  color: #ffffff;
+}
+
+.submitArrow {
+  display: block;
+  transition: filter var(--transition-fast);
+}
+
+.submitWrapper[data-invalid] .submitArrow {
+  filter: brightness(0) invert(1);
 }
 

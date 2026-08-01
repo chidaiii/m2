@@ -50,8 +50,6 @@
 }
 
 .playIcon {
-  font-size: 32px;
-  color: white;
   opacity: 0;
   transition: opacity var(--transition-fast);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));

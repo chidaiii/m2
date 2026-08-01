@@ -9,6 +9,7 @@
   padding: var(--space-lg);
   animation: fadeIn 200ms ease;
   overflow-y: auto;
+  user-select: none;
 }
 
 @keyframes fadeIn {
@@ -41,13 +42,18 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 144px;
-  height: 144px;
+  width: 208px;
+  height: 208px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1001;
   transition: opacity var(--transition-fast);
+}
+
+.closeButton img {
+  width: 138px;
+  height: 138px;
 }
 
 .closeButton:hover {

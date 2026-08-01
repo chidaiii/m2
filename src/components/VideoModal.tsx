@@ -25,6 +25,7 @@ export default function VideoModal({ work, onClose }: Props) {
       onClose={onClose}
       ariaLabel={work.title || "動画を再生"}
       className={styles.panel}
+      disableOverlayClose
     >
       <div className={styles.videoWrapper}>
         <iframe

@@ -45,13 +45,20 @@
   gap: var(--space-sm);
 }
 
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .categoryLabel {
   display: flex;
   align-items: flex-end;
   gap: 1px;
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-latin);
   font-weight: 700;
-  font-size: var(--font-size-sm);
+  font-size: 18px;
   text-transform: uppercase;
   color: #ffffff;
 }
@@ -60,7 +67,9 @@
   font-family: var(--font-family-mono);
   font-size: 8px;
   font-weight: 400;
-  transform: translateY(-2px);
+  align-self: flex-start;
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .rule {
@@ -73,6 +82,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  max-height: 400px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 200ms ease;
+}
+
+.tagsCollapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
 .copyright {

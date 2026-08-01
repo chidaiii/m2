@@ -1,42 +1,82 @@
-.button {
+/* SVG shape: 288×96 → 0.5x = 144×48
+   Main body: x=16–288 (272px) with 16×16 notch at bottom-left
+   Deco square: x=0–16 (16px), y=80–96 (16px) — sits left of the notch gap */
+
+.wrapper {
   position: fixed;
   top: 0;
   right: 0;
   z-index: 900;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  height: 40px;
-  padding: 0 var(--space-lg);
-  background: var(--color-accent);
-  color: #ffffff;
-  font-family: var(--font-family-base);
-  font-weight: 700;
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
-  transition: opacity var(--transition-fast);
+  width: 144px; /* 288/2 */
+  height: 48px; /* 96/2 */
 }
 
-.button::before,
-.button::after {
+/* Decorative 8×8 square at bottom-left (separate from button body) */
+.wrapper::before {
   content: "";
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 6px;
-  height: 6px;
-}
-
-.button::before {
-  background: var(--color-bg);
-  transform: translate(-200%, 0);
-}
-
-.button::after {
+  width: 8px;
+  height: 8px;
   background: var(--color-accent);
-  transform: translate(-100%, 0);
+  transition: background var(--transition-fast);
+}
+
+.wrapper:has(button:hover)::before {
+  background: #ffffff;
+}
+
+.button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 136px; /* 272/2 = main body width */
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 16px;
+  background: var(--color-accent);
+  color: #ffffff;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  /* Clip the 8×8 notch from bottom-left corner */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px));
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .button:hover {
-  opacity: 0.85;
+  background: #ffffff;
+  color: var(--color-accent);
+}
+
+.arrowWrap {
+  position: relative;
+  display: block;
+  width: 8px;
+  height: 16px;
+}
+
+.arrowDefault,
+.arrowBlue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.arrowBlue {
+  opacity: 0;
+}
+
+.button:hover .arrowBlue {
+  opacity: 1;
+}
+
+.button:hover .arrowDefault {
+  opacity: 0;
 }

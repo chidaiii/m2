@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { extractVideoId } from "@/lib/youtube";
+import { extractVideoId, getThumbnailUrl, getThumbnailFallbackUrl } from "@/lib/youtube";
 import { TAG_CATEGORIES } from "@/lib/tags";
 import Modal from "./Modal";
 import Tag from "./Tag";
@@ -21,6 +21,14 @@ export default function SubmitModal({ onClose }: Props) {
   const [urlError, setUrlError] = useState("");
   const [selectedTags, setSelectedTags] = useState<TagState>(INITIAL_TAGS);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const videoId = extractVideoId(youtubeUrl);
+  const isSubmitEnabled =
+    !!videoId &&
+    selectedTags.type.length > 0 &&
+    selectedTags.style.length > 0 &&
+    selectedTags.genre.length > 0;
 
   const toggleTag = (category: string, tag: string) => {
     setSelectedTags((prev) => {
@@ -47,7 +55,10 @@ export default function SubmitModal({ onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateUrl(youtubeUrl)) return;
+    if (!isSubmitEnabled) {
+      setSubmitAttempted(true);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -69,7 +80,7 @@ export default function SubmitModal({ onClose }: Props) {
   };
 
   return (
-    <Modal onClose={onClose} ariaLabel="作品を投稿" className={styles.panel}>
+    <Modal onClose={onClose} ariaLabel="作品を投稿" className={styles.panel} disableOverlayClose>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <div className={styles.logoRow}>
@@ -86,64 +97,104 @@ export default function SubmitModal({ onClose }: Props) {
       </div>
 
       <form className={styles.body} onSubmit={handleSubmit} noValidate>
-        <div className={styles.field}>
-          <p className={styles.fieldLabel}>URL</p>
-          <input
-            id="submit-url"
-            type="url"
-            className={`${styles.input}${urlError ? ` ${styles.inputError}` : ""}`}
-            placeholder="https://www.youtube.com/watch?v="
-            value={youtubeUrl}
-            onChange={(e) => {
-              setYoutubeUrl(e.target.value);
-              if (urlError) validateUrl(e.target.value);
-            }}
-            onBlur={(e) => validateUrl(e.target.value)}
-            autoComplete="off"
-          />
-          {urlError && (
-            <p className={styles.errorText} role="alert">
-              {urlError}
-            </p>
-          )}
-        </div>
-
-        <div className={styles.field}>
-          <p className={styles.fieldLabel}>TAG</p>
-          <div className={styles.tagGroups}>
-            {TAG_CATEGORIES.map((category) => (
-              <div key={category.key} className={styles.tagGroup}>
-                <p className={styles.tagGroupLabel}>▪{category.label}</p>
-                <div className={styles.tagRow}>
-                  {category.options.map((tag) => (
-                    <Tag
-                      key={tag}
-                      label={tag}
-                      isActive={(selectedTags[category.key] ?? []).includes(tag)}
-                      onClick={() => toggleTag(category.key, tag)}
-                      variant="on-accent"
+        <div className={styles.leftCol}>
+          <div className={styles.field}>
+            <p className={styles.fieldLabel}>MOVIE</p>
+            <div className={styles.previewSection}>
+              <p className={styles.previewLabel}>▪URL</p>
+              <input
+                id="submit-url"
+                type="url"
+                className={`${styles.input}${urlError ? ` ${styles.inputError}` : ""}`}
+                placeholder="https://www.youtube.com/watch?v="
+                value={youtubeUrl}
+                onChange={(e) => {
+                  setYoutubeUrl(e.target.value);
+                  if (urlError) validateUrl(e.target.value);
+                }}
+                onBlur={(e) => validateUrl(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <div className={styles.previewSection}>
+              <p className={styles.previewLabel}>▪preview</p>
+              <div className={styles.preview}>
+                {videoId ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={getThumbnailUrl(videoId)}
+                    alt=""
+                    className={styles.previewThumb}
+                    onError={(e) => {
+                      e.currentTarget.src = getThumbnailFallbackUrl(videoId);
+                    }}
+                  />
+                ) : (
+                  <div className={styles.previewEmpty}>
+                    <Image
+                      src="/logomark.svg"
+                      alt=""
+                      width={64}
+                      height={64}
+                      className={styles.previewEmptyIcon}
+                      aria-hidden="true"
                     />
-                  ))}
-                </div>
+                    <p className={styles.previewEmptyText}>NOT FOUND</p>
+                  </div>
+                )}
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
-        <button
-          type="submit"
-          className={styles.submitBtn}
-          disabled={isSubmitting}
+        <div className={styles.rightCol}>
+          <div className={styles.field}>
+            <p className={`${styles.fieldLabel} ${styles.fieldLabelSm}`}>TAG</p>
+            <div className={styles.tagGroups}>
+              {TAG_CATEGORIES.map((category) => (
+                <div key={category.key} className={styles.tagGroup}>
+                  <p className={styles.tagGroupLabel}>▪{category.label}</p>
+                  <div className={styles.tagRow}>
+                    {category.options.map((tag) => (
+                      <Tag
+                        key={tag}
+                        label={tag}
+                        isActive={(selectedTags[category.key] ?? []).includes(tag)}
+                        onClick={() => toggleTag(category.key, tag)}
+                        variant="on-accent"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {submitAttempted && !isSubmitEnabled && (
+          <p className={styles.validationNote}>
+            未入力の項目があるため送信できません。
+          </p>
+        )}
+        <div
+          className={styles.submitWrapper}
+          data-invalid={!isSubmitEnabled || undefined}
         >
-          <span>{isSubmitting ? "送信中..." : "送信する"}</span>
-          <Image
-            src="/icon-arrow-blue.svg"
-            alt=""
-            width={7}
-            height={13}
-            className={styles.submitArrow}
-          />
-        </button>
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={isSubmitting}
+          >
+            <span>{isSubmitting ? "送信中..." : "送信する"}</span>
+            <Image
+              src="/icon-arrow-blue.svg"
+              alt=""
+              width={7}
+              height={13}
+              className={styles.submitArrow}
+            />
+          </button>
+        </div>
       </form>
     </Modal>
   );

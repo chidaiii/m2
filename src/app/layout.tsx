@@ -1,18 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, DotGothic16 } from "next/font/google";
 import "@/app/globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-inter",
-});
-
-const dotGothic16 = DotGothic16({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-dotgothic16",
-});
 
 export const metadata: Metadata = {
   title: "motion×music col.",
@@ -25,7 +12,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${dotGothic16.variable}`}>
+    <html lang="ja">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;700&family=Noto+Sans+JP:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

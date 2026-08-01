@@ -17,14 +17,19 @@ export default function SubmitButton() {
 
   return (
     <>
-      <button
-        className={styles.button}
-        onClick={() => setIsOpen(true)}
-        type="button"
-      >
-        <span>掲載する</span>
-        <Image src="/icon-arrow.svg" alt="" width={7} height={13} />
-      </button>
+      <div className={styles.wrapper}>
+        <button
+          className={styles.button}
+          onClick={() => setIsOpen(true)}
+          type="button"
+        >
+          <span>掲載する</span>
+          <span className={styles.arrowWrap}>
+            <Image src="/icon-arrow.svg" alt="" width={8} height={16} className={styles.arrowDefault} />
+            <Image src="/icon-arrow-blue.svg" alt="" width={8} height={16} className={styles.arrowBlue} />
+          </span>
+        </button>
+      </div>
       {isOpen && <SubmitModal onClose={() => setIsOpen(false)} />}
     </>
   );
