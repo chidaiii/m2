@@ -8,7 +8,7 @@
     font-family: var(--font-family-base);
     font-size: 10px;
     color: var(--color-text-muted);
-    padding: var(--space-lg);
+    padding: 0 var(--space-lg) var(--space-lg);
     text-align: left;
   }
 }

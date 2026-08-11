@@ -20,7 +20,7 @@
   --color-tag-text-active: #ffffff;
   --color-tag-bg-on-accent: #ffffff;
   --color-tag-text-on-accent: var(--color-accent);
-  --color-overlay: rgba(0, 0, 0, 0.9);
+  --color-overlay: rgba(0, 0, 0, 0.75);
 
   /* Spacing */
   --space-xs: 4px;

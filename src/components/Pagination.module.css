@@ -83,7 +83,7 @@
 @media (max-width: 768px) {
   .pagination {
     padding-top: 24px;
-    padding-bottom: 12px;
+    padding-bottom: 0;
     justify-content: flex-end;
   }
 
@@ -95,28 +95,28 @@
   /* ページネーション全体を現状の120%サイズに */
   .pageBtn,
   .arrowBtn {
-    width: 28.8px;
-    height: 28.8px;
+    width: 29px;
+    height: 29px;
   }
 
   .pageBtn,
   .ellipsis {
-    font-size: 15.6px;
+    font-size: 16px;
   }
 
   .controls {
-    gap: 4.8px;
+    gap: 5px;
   }
 
   .arrowWrapPrev,
   .arrowWrapNext {
-    width: 9.6px;
-    height: 19.2px;
+    width: 10px;
+    height: 19px;
   }
 
   .arrowWrapPrev img,
   .arrowWrapNext img {
-    width: 9.6px;
-    height: 19.2px;
+    width: 10px;
+    height: 19px;
   }
 }

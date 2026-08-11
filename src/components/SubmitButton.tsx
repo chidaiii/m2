@@ -7,17 +7,34 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SubmitModal from "./SubmitModal";
 import styles from "./SubmitButton.module.css";
 
 export default function SubmitButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHiddenByScroll, setIsHiddenByScroll] = useState(false);
+  const lastScrollY = useRef(0);
+
+  // SP: 下スクロールで隠し、上スクロールで再表示する(ページ最上部付近では常に表示)
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > lastScrollY.current;
+      setIsHiddenByScroll(scrollingDown && currentScrollY > 80);
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
-      <div className={styles.wrapper}>
+      <div
+        className={`${styles.wrapper}${isHiddenByScroll ? ` ${styles.hidden}` : ""}`}
+      >
         <button
           className={styles.button}
           onClick={() => setIsOpen(true)}

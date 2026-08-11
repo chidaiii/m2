@@ -81,7 +81,7 @@ export default function GalleryShell({ works }: Props) {
       <main className={styles.main}>
         <p className={styles.count}>{countLabel}</p>
         {filteredWorks.length === 0 ? (
-          <p className={styles.empty}>該当する作品がありません</p>
+          <p className={styles.empty}>Not Found</p>
         ) : (
           <>
             <WorkGrid works={pagedWorks} onSelect={setActiveWork} />

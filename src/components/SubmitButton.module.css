@@ -85,5 +85,11 @@
   .wrapper {
     top: auto;
     bottom: 0;
+    transition: transform 250ms ease;
+  }
+
+  /* 下スクロール中は下に隠す。上スクロールで戻す */
+  .wrapper.hidden {
+    transform: translateY(100%);
   }
 }
