@@ -6,7 +6,10 @@ import { TAG_CATEGORIES } from "@/lib/tags";
 import type { TagCategoryKey } from "@/lib/tags";
 import type { SelectedTags } from "./GalleryShell";
 import Tag from "./Tag";
+import TypewriterTagline from "./TypewriterTagline";
 import styles from "./Sidebar.module.css";
+
+const TAGLINE_PHRASES = ["クオリティーの高いMVの保管庫", "m2=motion×music"];
 
 interface Props {
   selectedTags: SelectedTags;
@@ -25,8 +28,8 @@ export default function Sidebar({ selectedTags, onToggle }: Props) {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoBlock}>
-        <Image src="/logo.svg" alt="m2archive" width={168} height={24} />
-        <p className={styles.tagline}>CGを用いた質の高いMVの収集・記録</p>
+        <Image src="/logo.svg" alt="m2 index" width={141} height={24} />
+        <TypewriterTagline phrases={TAGLINE_PHRASES} className={styles.tagline} />
       </div>
 
       <div className={styles.filters}>
@@ -67,7 +70,7 @@ export default function Sidebar({ selectedTags, onToggle }: Props) {
         })}
       </div>
 
-      <p className={styles.copyright}>©2026 m2 archive.</p>
+      <p className={styles.copyright}>©2026 m2 index.</p>
     </aside>
   );
 }

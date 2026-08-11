@@ -2,8 +2,20 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "motion×music col.",
-  description: "モーショングラフィックス特化の動画ギャラリー",
+  metadataBase: new URL("https://m2archive.vercel.app"),
+  title: "m² index",
+  description: "クオリティーの高いMVの保管庫",
+  openGraph: {
+    title: "m² index",
+    description: "クオリティーの高いMVの保管庫",
+    type: "website",
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "m² index",
+    description: "クオリティーの高いMVの保管庫",
+  },
 };
 
 export default function RootLayout({

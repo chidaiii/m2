@@ -84,7 +84,7 @@ export default function SubmitModal({ onClose }: Props) {
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <div className={styles.logoRow}>
-            <Image src="/logo-blue.svg" alt="" width={168} height={24} />
+            <Image src="/logo-blue.svg" alt="" width={141} height={24} />
             <span className={styles.headerTo}>に</span>
           </div>
           <h2 className={styles.headerTitle}>掲載する</h2>
