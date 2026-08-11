@@ -74,7 +74,8 @@ MICROCMS_WRITE_API_KEY=your-write-api-key
 
 # YouTube Data API v3（再生リスト一括登録スクリプト用）
 YOUTUBE_API_KEY=your-youtube-api-key
-YOUTUBE_PLAYLIST_ID=your-playlist-id
+# 複数の再生リストをカンマ区切りで指定可能
+YOUTUBE_PLAYLIST_IDS=your-playlist-id-1,your-playlist-id-2
 ```
 
 **各値の確認場所：**
@@ -85,7 +86,7 @@ YOUTUBE_PLAYLIST_ID=your-playlist-id
 | `MICROCMS_API_KEY` | microCMS 読み取り用APIキー | microCMS管理画面 → API設定 → APIキー |
 | `MICROCMS_WRITE_API_KEY` | microCMS 書き込み用APIキー | 同上（権限に「書き込み」が含まれるキーを使用） |
 | `YOUTUBE_API_KEY` | YouTube Data API v3 キー | Google Cloud Console（下記参照） |
-| `YOUTUBE_PLAYLIST_ID` | インポート対象の再生リストID | YouTube再生リストのURLから取得（下記参照） |
+| `YOUTUBE_PLAYLIST_IDS` | インポート対象の再生リストID（複数可、カンマ区切り） | YouTube再生リストのURLから取得（下記参照） |
 
 > **`MICROCMS_API_KEY` と `MICROCMS_WRITE_API_KEY` について**
 >
@@ -100,7 +101,7 @@ Vercel管理画面 → プロジェクト → **Settings → Environment Variabl
 - `MICROCMS_SERVICE_DOMAIN`
 - `MICROCMS_API_KEY`
 
-`MICROCMS_WRITE_API_KEY` / `YOUTUBE_API_KEY` / `YOUTUBE_PLAYLIST_ID` はスクリプトのローカル実行専用のため、Vercelへの登録は不要です。
+`MICROCMS_WRITE_API_KEY` / `YOUTUBE_API_KEY` / `YOUTUBE_PLAYLIST_IDS` はスクリプトのローカル実行専用のため、Vercelへの登録は不要です。
 
 ---
 
@@ -182,7 +183,15 @@ https://www.youtube.com/playlist?list=PLxxxxxxxxxxxxxxxxxx
                                       ↑ これが再生リストID
 ```
 
-確認した ID を `YOUTUBE_PLAYLIST_ID` に設定します。
+確認した ID を `YOUTUBE_PLAYLIST_IDS` に設定します。
+
+**複数の再生リストから読み込みたい場合**（YouTubeは1つの再生リストが200本を超えると編集できなくなるため、複数リストに分けて運用したい場合など）は、カンマ区切りで複数指定できます：
+
+```env
+YOUTUBE_PLAYLIST_IDS=PLxxxxxxxxxxxxxxxxxx,PLyyyyyyyyyyyyyyyyyy
+```
+
+同じ動画が複数の再生リストに含まれていても、動画IDで自動的に重複除去されます。
 
 #### 3. tsx のインストール
 
@@ -202,7 +211,7 @@ npm run import:playlist
 
 ```
 === YouTube 再生リスト一括登録スクリプト ===
-再生リストID: PLxxxxxxxxxxxxxxxxxx
+再生リストID: PLxxxxxxxxxxxxxxxxxx, PLyyyyyyyyyyyyyyyyyy
 
 [1/4] YouTube 再生リストを取得中...
   → 25 件の動画を取得しました

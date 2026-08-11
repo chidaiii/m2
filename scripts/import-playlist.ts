@@ -5,7 +5,7 @@
  *   npm run import:playlist
  *
  * 動作フロー:
- *   1. 指定した再生リストから全動画を取得（ページネーション対応）
+ *   1. 指定した再生リスト（複数可）から全動画を取得（ページネーション対応、リスト間の重複は除去）
  *   2. microCMSの既存データと照合し、重複をスキップ
  *   3. 新規動画のみ microCMS に登録
  *   4. microCMSに登録済みの全動画についてYouTube上での視聴可否を確認し、
@@ -19,7 +19,14 @@ import { extractVideoId, checkVideoAvailability } from "../src/lib/youtube.js";
 
 // ---- 環境変数 ----
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-const YOUTUBE_PLAYLIST_ID = process.env.YOUTUBE_PLAYLIST_ID;
+// YOUTUBE_PLAYLIST_IDS: カンマ区切りで複数指定可（YouTubeは1再生リスト200本超で編集不可になるため）
+// 後方互換のため、未設定なら単数形の YOUTUBE_PLAYLIST_ID にフォールバック
+const YOUTUBE_PLAYLIST_IDS = (
+  process.env.YOUTUBE_PLAYLIST_IDS ?? process.env.YOUTUBE_PLAYLIST_ID ?? ""
+)
+  .split(",")
+  .map((id) => id.trim())
+  .filter((id) => id.length > 0);
 const MICROCMS_SERVICE_DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 const MICROCMS_WRITE_API_KEY = process.env.MICROCMS_WRITE_API_KEY;
 
@@ -170,8 +177,10 @@ async function main() {
   if (!YOUTUBE_API_KEY) {
     throw new Error("環境変数 YOUTUBE_API_KEY が設定されていません");
   }
-  if (!YOUTUBE_PLAYLIST_ID) {
-    throw new Error("環境変数 YOUTUBE_PLAYLIST_ID が設定されていません");
+  if (YOUTUBE_PLAYLIST_IDS.length === 0) {
+    throw new Error(
+      "環境変数 YOUTUBE_PLAYLIST_IDS（またはYOUTUBE_PLAYLIST_ID）が設定されていません"
+    );
   }
   if (!MICROCMS_SERVICE_DOMAIN) {
     throw new Error("環境変数 MICROCMS_SERVICE_DOMAIN が設定されていません");
@@ -181,7 +190,7 @@ async function main() {
   }
 
   console.log("=== YouTube 再生リスト一括登録スクリプト ===");
-  console.log(`再生リストID: ${YOUTUBE_PLAYLIST_ID}`);
+  console.log(`再生リストID: ${YOUTUBE_PLAYLIST_IDS.join(", ")}`);
 
   // microCMS クライアント（書き込み権限のある API キーを使用）
   const client = createClient({
@@ -189,13 +198,25 @@ async function main() {
     apiKey: MICROCMS_WRITE_API_KEY,
   });
 
-  // Step 1: YouTube 再生リストの全動画を取得
+  // Step 1: YouTube 再生リストの全動画を取得（複数指定時は順に取得してマージ）
   console.log("\n[1/6] YouTube 再生リストを取得中...");
-  const playlistItems = await fetchPlaylistItems(
-    YOUTUBE_API_KEY,
-    YOUTUBE_PLAYLIST_ID
+  const fetchedItems: PlaylistItem[] = [];
+  for (const playlistId of YOUTUBE_PLAYLIST_IDS) {
+    const items = await fetchPlaylistItems(YOUTUBE_API_KEY, playlistId);
+    console.log(`  → [${playlistId}] ${items.length} 件の動画を取得しました`);
+    fetchedItems.push(...items);
+  }
+
+  // 同じ動画が複数の再生リストに含まれる場合があるため、動画IDで重複除去
+  const seenVideoIds = new Set<string>();
+  const playlistItems = fetchedItems.filter((item) => {
+    if (seenVideoIds.has(item.videoId)) return false;
+    seenVideoIds.add(item.videoId);
+    return true;
+  });
+  console.log(
+    `  → 合計 ${playlistItems.length} 件（再生リスト間の重複除去後）`
   );
-  console.log(`  → ${playlistItems.length} 件の動画を取得しました`);
 
   // Step 2: microCMS の登録済み動画を取得
   console.log("\n[2/6] microCMS の既存データを確認中...");
