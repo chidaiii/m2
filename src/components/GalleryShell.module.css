@@ -5,7 +5,7 @@
 .main {
   margin-left: var(--sidebar-width);
   min-width: 0;
-  padding: var(--space-xl);
+  padding: var(--layout-padding);
 }
 
 .count {

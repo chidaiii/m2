@@ -80,3 +80,10 @@
 .button:hover .arrowDefault {
   opacity: 0;
 }
+
+@media (max-width: 768px) {
+  .wrapper {
+    top: auto;
+    bottom: 0;
+  }
+}

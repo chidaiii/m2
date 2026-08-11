@@ -28,6 +28,9 @@ export const TAG_STYLE = [
   "和風",
   "漫画風",
   "ゲーム感",
+  "ストーリー性",
+  "高いカメラ技術",
+  "ウェブコア",
 ] as const;
 export const TAG_GENRE = [
   "ポップス",

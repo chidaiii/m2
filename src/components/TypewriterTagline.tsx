@@ -10,7 +10,7 @@ interface Props {
 
 const TYPE_SPEED_MS = 70;
 const DELETE_SPEED_MS = 35;
-const HOLD_MS = 2800;
+const HOLD_MS = 4800;
 const PAUSE_MS = 300;
 
 type Phase = "typing" | "holding" | "deleting" | "pausing";
@@ -67,10 +67,7 @@ export default function TypewriterTagline({ phrases, className }: Props) {
 
   return (
     <p className={className}>
-      <span aria-hidden="true">
-        {text}
-        <span className={styles.cursor} />
-      </span>
+      <span aria-hidden="true">{text}</span>
       <span className={styles.srOnly}>{phrases.join(" / ")}</span>
     </p>
   );

@@ -79,3 +79,44 @@
 
 .arrowWrapPrev { transform: rotate(-90deg); }
 .arrowWrapNext { transform: rotate(90deg); }
+
+@media (max-width: 768px) {
+  .pagination {
+    padding-top: 24px;
+    padding-bottom: 12px;
+    justify-content: flex-end;
+  }
+
+  /* 下部の「N of M movies」表示は不要(上部の表示のみ残す) */
+  .label {
+    display: none;
+  }
+
+  /* ページネーション全体を現状の120%サイズに */
+  .pageBtn,
+  .arrowBtn {
+    width: 28.8px;
+    height: 28.8px;
+  }
+
+  .pageBtn,
+  .ellipsis {
+    font-size: 15.6px;
+  }
+
+  .controls {
+    gap: 4.8px;
+  }
+
+  .arrowWrapPrev,
+  .arrowWrapNext {
+    width: 9.6px;
+    height: 19.2px;
+  }
+
+  .arrowWrapPrev img,
+  .arrowWrapNext img {
+    width: 9.6px;
+    height: 19.2px;
+  }
+}

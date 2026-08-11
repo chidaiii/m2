@@ -1,0 +1,14 @@
+.copyright {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .copyright {
+    display: block;
+    font-family: var(--font-family-base);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    padding: var(--space-lg);
+    text-align: left;
+  }
+}

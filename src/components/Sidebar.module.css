@@ -18,19 +18,21 @@
 .logoBlock {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-xs);
 }
 
 .logoBlock img {
   width: auto;
-  height: 24px;
+  height: 26.4px;
 }
 
 .tagline {
   font-family: var(--font-family-base);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--color-text-primary);
   line-height: 1.5;
+  min-height: 1.5em;
 }
 
 .filters {
@@ -65,7 +67,7 @@
 
 .categoryCount {
   font-family: var(--font-family-mono);
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 400;
   align-self: flex-start;
   line-height: 1;
@@ -95,18 +97,104 @@
 
 .copyright {
   font-family: var(--font-family-base);
-  font-size: 8px;
+  font-size: 10px;
   color: var(--color-text-muted);
   margin-top: auto;
 }
 
+.filterButton {
+  display: none;
+}
+
+.mobileOverlay {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-    overflow-y: visible;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: min(85vw, 320px);
+    height: 100%;
     border-right: none;
-    border-bottom: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+    /* Modal(video/submit)のoverlay(z-index:1000)より必ず下にする */
+    z-index: 860;
+    transform: translateX(100%);
+    transition: transform 250ms ease;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+
+  .filterButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    /* MobileBrandHeaderのロゴと高さ・位置を揃える */
+    top: var(--space-lg);
+    right: var(--space-md);
+    width: 26.4px;
+    height: 26.4px;
+    /* Modal(video/submit)のoverlay(z-index:1000)より必ず下にする */
+    z-index: 870;
+  }
+
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: var(--color-overlay);
+    /* Modal(video/submit)のoverlay(z-index:1000)より必ず下にする */
+    z-index: 850;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
+
+  .mobileOverlay.mobileOpen {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ロゴ・タグラインはハンバーガーメニューの外(サイト上部)に置くため、ドロワー内では非表示にする */
+  .logoBlock {
+    display: none;
+  }
+
+  /* コピーライトはハンバーガーメニューの外(サイト最下部)に置くため、ドロワー内では非表示にする */
+  .copyright {
+    display: none;
+  }
+
+  /* 右上固定の×ボタンとタグ要素が重なるため、フィルター一覧を少し下げる */
+  .sidebar {
+    padding-top: 64px;
+  }
+
+  /* タググループ内の各テキストを一回り大きく */
+  .tags button {
+    font-size: 14px;
+  }
+}
+
+/* PC版はタググループを常に開いたままにし、開閉トグルを無効化する */
+@media (min-width: 769px) {
+  .categoryHeader {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .toggleIcon {
+    display: none;
+  }
+
+  .tagsCollapsed {
+    max-height: none;
+    opacity: 1;
   }
 }

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import MobileBrandHeader from "@/components/MobileBrandHeader";
+import MobileBrandFooter from "@/components/MobileBrandFooter";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
@@ -33,7 +35,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <MobileBrandHeader />
+        {children}
+        <MobileBrandFooter />
+      </body>
     </html>
   );
 }
