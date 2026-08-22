@@ -83,7 +83,7 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   max-height: 400px;
   opacity: 1;
   overflow: hidden;

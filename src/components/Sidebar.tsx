@@ -49,7 +49,7 @@ export default function Sidebar({ selectedTags, onToggle }: Props) {
         type="button"
       >
         <Image
-          src={isMobileOpen ? "/icon-close.svg" : "/Filter.svg"}
+          src={isMobileOpen ? "/close.svg" : "/Filter.svg"}
           alt=""
           width={24}
           height={24}

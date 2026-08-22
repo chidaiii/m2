@@ -1,8 +1,15 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--grid-gap) var(--grid-gap);
   row-gap: var(--grid-gap-y);
+}
+
+/* 1440px以下: 3カラム */
+@media (max-width: 1440px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* タブレット: 2カラム */

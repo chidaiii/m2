@@ -62,12 +62,12 @@
 
 @media (max-width: 600px) {
   .closeButton {
-    width: 72px;
-    height: 72px;
+    width: 96px;
+    height: 96px;
   }
 
   .closeButton img {
-    width: 48px;
-    height: 48px;
+    width: 96px;
+    height: 96px;
   }
 }
