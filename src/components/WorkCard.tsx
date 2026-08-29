@@ -9,6 +9,7 @@ import {
   getThumbnailFallbackUrl,
 } from "@/lib/youtube";
 import { formatDate } from "@/lib/date";
+import { useScrambleText } from "@/lib/useScrambleText";
 import styles from "./WorkCard.module.css";
 
 interface Props {
@@ -22,6 +23,8 @@ export default function WorkCard({ work, onClick }: Props) {
     videoId ? getThumbnailUrl(videoId) : ""
   );
   const dateSource = work.youtubePublishedAt ?? work.publishedAt;
+  const [isHovered, setIsHovered] = useState(false);
+  const scrambledTitle = useScrambleText(work.title ?? "", isHovered);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -35,6 +38,8 @@ export default function WorkCard({ work, onClick }: Props) {
       className={styles.card}
       onClick={onClick}
       onKeyDown={handleKeyDown}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
       aria-label={work.title ? `${work.title} を再生` : "動画を再生"}
@@ -65,7 +70,7 @@ export default function WorkCard({ work, onClick }: Props) {
         </div>
       </div>
       <div className={styles.info}>
-        {work.title && <p className={styles.title}>{work.title}</p>}
+        {work.title && <p className={styles.title}>{scrambledTitle}</p>}
         {dateSource && <p className={styles.date}>{formatDate(dateSource)}</p>}
       </div>
     </article>

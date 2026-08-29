@@ -3,15 +3,8 @@
   max-width: 100%;
 }
 
-@media (max-width: 768px) {
-  /* overlayの左右パディング分を打ち消して、動画を画面幅いっぱいに広げる */
-  .panel {
-    width: calc(100% + var(--space-lg) * 2);
-    max-width: calc(100% + var(--space-lg) * 2);
-    margin-left: calc(var(--space-lg) * -1);
-    margin-right: calc(var(--space-lg) * -1);
-  }
-}
+/* overlayがSPで左右パディング0になったため、.panelの幅指定だけで
+   自然に画面幅いっぱいになる(打ち消し処理は不要) */
 
 .videoWrapper {
   position: relative;

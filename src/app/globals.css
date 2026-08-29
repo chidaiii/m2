@@ -8,7 +8,7 @@
   /* Colors */
   --color-bg: #000000;
   --color-surface: #000000;
-  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
   --color-border: rgba(255, 255, 255, 0.1);
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.5);

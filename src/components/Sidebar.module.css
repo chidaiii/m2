@@ -84,15 +84,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  max-height: 400px;
-  opacity: 1;
-  overflow: hidden;
-  transition: max-height 300ms ease, opacity 200ms ease;
-}
-
-.tagsCollapsed {
-  max-height: 0;
-  opacity: 0;
 }
 
 .copyright {
@@ -184,19 +175,3 @@
   }
 }
 
-/* PC版はタググループを常に開いたままにし、開閉トグルを無効化する */
-@media (min-width: 769px) {
-  .categoryHeader {
-    cursor: default;
-    pointer-events: none;
-  }
-
-  .toggleIcon {
-    display: none;
-  }
-
-  .tagsCollapsed {
-    max-height: none;
-    opacity: 1;
-  }
-}

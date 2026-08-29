@@ -31,6 +31,7 @@ export const TAG_STYLE = [
   "ストーリー性",
   "高いカメラ技術",
   "ウェブコア",
+  "ユニーク",
 ] as const;
 export const TAG_GENRE = [
   "ポップス",

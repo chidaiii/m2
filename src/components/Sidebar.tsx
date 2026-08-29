@@ -16,14 +16,7 @@ interface Props {
 }
 
 export default function Sidebar({ selectedTags, onToggle }: Props) {
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(
-    () => Object.fromEntries(TAG_CATEGORIES.map(({ key }) => [key, true]))
-  );
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  const toggleCategory = (key: string) => {
-    setOpenCategories((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
 
   // SP: メニュー表示中はEscキーで閉じられるようにし、背景のスクロールを止める
   useEffect(() => {
@@ -72,42 +65,28 @@ export default function Sidebar({ selectedTags, onToggle }: Props) {
         </div>
 
         <div className={styles.filters}>
-          {TAG_CATEGORIES.map(({ key, label, options }) => {
-            const isOpen = openCategories[key];
-            return (
-              <div key={key} className={styles.category}>
-                <button
-                  className={styles.categoryHeader}
-                  onClick={() => toggleCategory(key)}
-                  aria-expanded={isOpen}
-                >
-                  <span className={styles.categoryLabel}>
-                    <span>{label}</span>
-                    <span className={styles.categoryCount}>{options.length}</span>
-                  </span>
-                  <Image
-                    src={isOpen ? "/minus.svg" : "/plus.svg"}
-                    alt={isOpen ? "閉じる" : "開く"}
-                    width={12}
-                    height={12}
-                    className={styles.toggleIcon}
-                  />
-                </button>
-                <div className={styles.rule} aria-hidden="true" />
-                <div className={`${styles.tags}${isOpen ? "" : ` ${styles.tagsCollapsed}`}`}>
-                  {options.map((tag) => (
-                    <Tag
-                      key={tag}
-                      label={tag}
-                      isActive={selectedTags[key].includes(tag)}
-                      onClick={() => onToggle(key, tag)}
-                      variant="on-dark"
-                    />
-                  ))}
-                </div>
+          {TAG_CATEGORIES.map(({ key, label, options }) => (
+            <div key={key} className={styles.category}>
+              <div className={styles.categoryHeader}>
+                <span className={styles.categoryLabel}>
+                  <span>{label}</span>
+                  <span className={styles.categoryCount}>{options.length}</span>
+                </span>
               </div>
-            );
-          })}
+              <div className={styles.rule} aria-hidden="true" />
+              <div className={styles.tags}>
+                {options.map((tag) => (
+                  <Tag
+                    key={tag}
+                    label={tag}
+                    isActive={selectedTags[key].includes(tag)}
+                    onClick={() => onToggle(key, tag)}
+                    variant="on-dark"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         <p className={styles.copyright}>©2026 m2 index.</p>

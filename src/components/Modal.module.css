@@ -71,3 +71,15 @@
     height: 96px;
   }
 }
+
+@media (max-width: 768px) {
+  .overlay {
+    /* Figmaの「modal-2_SP」通り、カードは横方向は画面幅いっぱい(左右余白なし) */
+    padding: var(--space-md) 0;
+    /* align-itemsは中央寄せ(base rule)のままにする。
+       投稿モーダルのように上寄せ+枠内スクロールにしたい場合は、
+       各モーダル側のpanelクラスでalign-self: flex-start を指定する
+       (.modalは呼び出し元のclassNameと合成されるため、共通のここでは
+       高さ制約・寄せ位置をかけない) */
+  }
+}

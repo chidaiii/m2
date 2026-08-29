@@ -230,7 +230,7 @@
   font-family: var(--font-family-base);
   font-size: 12px;
   font-weight: 500;
-  color: #ffffff;
+  color: #ffff00;
 }
 
 .submitWrapper {
@@ -300,5 +300,90 @@
 
 .submitWrapper[data-invalid] .submitArrow {
   filter: brightness(0) invert(1);
+}
+
+/*
+ * SP版: Figma「modal-2_SP」(node 38:429) を正として実装。
+ * 見出しカード(.header)だけが白背景になり、MOVIE/TAGを含む本文(.body)は
+ * PCと同じ青背景のまま — 白反転はヘッダーのみで、body以下の白文字/白枠線は
+ * そのまま(変更不要)。
+ */
+@media (max-width: 768px) {
+  /*
+   * Modal.tsx は渡された className(.panel)を.modal自身に合成するため、
+   * .panelと.modalは同一要素。この要素を「スクロール枠」にすると、
+   * 中の絶対配置ボタン(.submitWrapper)も同じ枠に閉じ込められ、
+   * 見えている枠の下端に張り付いてしまう。
+   * そこで.panelInner(新設のラッパー)を「クリップされない実寸高さの
+   * コンテンツ本体」として分離し、.submitWrapperの基準をそちらにする。
+   */
+  .panel {
+    /* overlayはcenter寄せ(共通)のままなので、投稿モーダルだけ上寄せにする */
+    align-self: flex-start;
+    /* overlay側のpadding(上下var(--space-md))を打ち消した上で、
+       上だけ96px・下は0の余白にする */
+    margin-top: calc(96px - var(--space-md));
+    margin-bottom: calc(-1 * var(--space-md));
+    max-height: calc(100vh - 96px);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .panelInner {
+    position: relative;
+  }
+
+  /* 見出し行(ロゴ+「に掲載する」)を横並びの1行にする */
+  .headerLeft {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: var(--space-lg);
+  }
+
+  /* 見出し下の短いアクセントライン(全幅ではなく左寄せの短い線) */
+  .headerDivider {
+    align-self: flex-start;
+    width: 36px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  .headerDescription {
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    /* 下部は絶対配置の送信ボタン分の余白を確保 */
+    padding: var(--space-lg) var(--space-lg) 72px;
+  }
+
+  .field {
+    gap: 18px;
+  }
+
+  .tagGroups {
+    gap: var(--space-md);
+  }
+
+  .tagGroup {
+    gap: var(--space-sm);
+  }
+
+  .tagRow {
+    gap: 6px;
+  }
+
+  /* 送信ボタンはPCと同じデザイン(ノッチ+ピクセル角飾り)をそのまま使う */
 }
 
