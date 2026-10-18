@@ -41,23 +41,23 @@ export default function GalleryShell({ works }: Props) {
 
   /**
    * フィルターロジック：
-   * - 同一カテゴリ内は OR（いずれかに一致）
-   * - カテゴリをまたぐと AND（すべてのカテゴリ条件を満たす）
+   * - 同一カテゴリ内も AND（選択したタグをすべて満たす）
+   * - カテゴリをまたいでも AND（すべてのカテゴリ条件を満たす）
    * - 例: type=["3DCG"] + style=["クール","ポップ"]
-   *   → 3DCGかつ（クールまたはポップ）に一致する作品
+   *   → 3DCGかつクールかつポップに一致する作品
    */
   const filteredWorks = useMemo(() => {
     if (!hasFilter) return works;
     return works.filter((work) => {
       const typeMatch =
         selectedTags.type.length === 0 ||
-        selectedTags.type.some((t) => work.type?.includes(t as never));
+        selectedTags.type.every((t) => work.type?.includes(t as never));
       const styleMatch =
         selectedTags.style.length === 0 ||
-        selectedTags.style.some((t) => work.style?.includes(t as never));
+        selectedTags.style.every((t) => work.style?.includes(t as never));
       const genreMatch =
         selectedTags.genre.length === 0 ||
-        selectedTags.genre.some((t) => work.genre?.includes(t as never));
+        selectedTags.genre.every((t) => work.genre?.includes(t as never));
       return typeMatch && styleMatch && genreMatch;
     });
   }, [works, selectedTags, hasFilter]);

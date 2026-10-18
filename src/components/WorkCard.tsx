@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Work } from "@/types/work";
 import {
@@ -25,6 +25,15 @@ export default function WorkCard({ work, onClick }: Props) {
   const dateSource = work.youtubePublishedAt ?? work.publishedAt;
   const [isHovered, setIsHovered] = useState(false);
   const scrambledTitle = useScrambleText(work.title ?? "", isHovered);
+  const titleRef = useRef<HTMLParagraphElement>(null);
+  const [titleMinHeight, setTitleMinHeight] = useState<number>();
+
+  // スクランブルアニメーション中に歯抜け(空白)で一時的に行数が変わり、
+  // タイトルの高さが縮んでガクつくのを防ぐため、素のタイトルの高さを
+  // 下限として固定する(短い1行タイトルに余白が増えることはない)
+  useLayoutEffect(() => {
+    if (titleRef.current) setTitleMinHeight(titleRef.current.offsetHeight);
+  }, [work.title]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -70,7 +79,15 @@ export default function WorkCard({ work, onClick }: Props) {
         </div>
       </div>
       <div className={styles.info}>
-        {work.title && <p className={styles.title}>{scrambledTitle}</p>}
+        {work.title && (
+          <p
+            ref={titleRef}
+            className={styles.title}
+            style={{ minHeight: titleMinHeight }}
+          >
+            {scrambledTitle}
+          </p>
+        )}
         {dateSource && <p className={styles.date}>{formatDate(dateSource)}</p>}
       </div>
     </article>
