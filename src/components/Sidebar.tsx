@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { TAG_CATEGORIES } from "@/lib/tags";
+import { TAG_CATEGORIES, getTagLabel } from "@/lib/tags";
 import type { TagCategoryKey } from "@/lib/tags";
 import { TAGLINE_PHRASES } from "@/lib/tagline";
 import type { SelectedTags } from "./GalleryShell";
@@ -78,7 +78,7 @@ export default function Sidebar({ selectedTags, onToggle }: Props) {
                 {options.map((tag) => (
                   <Tag
                     key={tag}
-                    label={tag}
+                    label={getTagLabel(tag)}
                     isActive={selectedTags[key].includes(tag)}
                     onClick={() => onToggle(key, tag)}
                     variant="on-dark"

@@ -15,8 +15,16 @@ interface Props {
 
 export type SelectedTags = Record<TagCategoryKey, string[]>;
 
-const INITIAL_TAGS: SelectedTags = { type: [], style: [], genre: [] };
+const INITIAL_TAGS: SelectedTags = { type: [], style: [], music: [] };
 const PAGE_SIZE = 24;
+
+/**
+ * microCMS側のタグ値に末尾の余計な空白が混ざっているケースがあるため、
+ * 前後の空白を無視して比較する(完全一致の includes だと取り逃す)
+ */
+function hasTag(values: string[] | undefined, tag: string): boolean {
+  return values?.some((v) => v.trim() === tag.trim()) ?? false;
+}
 
 export default function GalleryShell({ works }: Props) {
   const [selectedTags, setSelectedTags] = useState<SelectedTags>(INITIAL_TAGS);
@@ -37,7 +45,7 @@ export default function GalleryShell({ works }: Props) {
   const hasFilter =
     selectedTags.type.length > 0 ||
     selectedTags.style.length > 0 ||
-    selectedTags.genre.length > 0;
+    selectedTags.music.length > 0;
 
   /**
    * フィルターロジック：
@@ -51,14 +59,14 @@ export default function GalleryShell({ works }: Props) {
     return works.filter((work) => {
       const typeMatch =
         selectedTags.type.length === 0 ||
-        selectedTags.type.every((t) => work.type?.includes(t as never));
+        selectedTags.type.every((t) => hasTag(work.type, t));
       const styleMatch =
         selectedTags.style.length === 0 ||
-        selectedTags.style.every((t) => work.style?.includes(t as never));
-      const genreMatch =
-        selectedTags.genre.length === 0 ||
-        selectedTags.genre.every((t) => work.genre?.includes(t as never));
-      return typeMatch && styleMatch && genreMatch;
+        selectedTags.style.every((t) => hasTag(work.style, t));
+      const musicMatch =
+        selectedTags.music.length === 0 ||
+        selectedTags.music.every((t) => hasTag(work.music, t));
+      return typeMatch && styleMatch && musicMatch;
     });
   }, [works, selectedTags, hasFilter]);
 

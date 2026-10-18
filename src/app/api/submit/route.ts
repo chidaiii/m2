@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { youtubeUrl, type, style, genre } = body as {
+  const { youtubeUrl, type, style, music } = body as {
     youtubeUrl?: unknown;
     type?: unknown;
     style?: unknown;
-    genre?: unknown;
+    music?: unknown;
   };
 
   // サーバー側バリデーション（フロントのバリデーションを信用しない）
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
         title: "", // タイトルは承認時に管理者が入力する
         type: Array.isArray(type) ? type : [],
         style: Array.isArray(style) ? style : [],
-        genre: Array.isArray(genre) ? genre : [],
+        music: Array.isArray(music) ? music : [],
       },
       isDraft: true,
     });

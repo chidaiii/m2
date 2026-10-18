@@ -44,12 +44,12 @@ interface PlaylistItem {
 interface VideoTags {
   type: string[];
   style: string[];
-  genre: string[];
+  music: string[];
 }
 
 // ---- タグ自動分類（将来の拡張ポイント） ----
 /**
- * 動画情報からタグ（type / style / genre）を返す関数。
+ * 動画情報からタグ（type / style / music）を返す関数。
  *
  * 【将来の拡張について】
  * 現在は空配列を返すスタブ実装。後からタグ自動付与に切り替えたい場合は、
@@ -58,7 +58,7 @@ interface VideoTags {
  *
  * 期待するシグネチャ:
  *   入力: videoId, title, youtubeUrl
- *   出力: { type, style, genre } — それぞれ src/lib/tags.ts の定数値と一致する文字列配列
+ *   出力: { type, style, music } — それぞれ src/lib/tags.ts の定数値と一致する文字列配列
  */
 async function classifyVideo(
   _videoId: string,
@@ -66,7 +66,7 @@ async function classifyVideo(
   _youtubeUrl: string
 ): Promise<VideoTags> {
   // TODO: ここを Gemini API 等の実装に差し替える
-  return { type: [], style: [], genre: [] };
+  return { type: [], style: [], music: [] };
 }
 
 // ---- YouTube Data API v3: 再生リスト全件取得 ----
@@ -256,7 +256,7 @@ async function main() {
           title: item.title,
           type: tags.type,
           style: tags.style,
-          genre: tags.genre,
+          music: tags.music,
         },
       });
 

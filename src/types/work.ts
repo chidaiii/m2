@@ -22,12 +22,12 @@ export type TagStyle =
   | "和風"
   | "漫画風"
   | "ゲーム感";
-export type TagGenre =
+export type TagMusic =
   | "ポップス"
   | "ボカロ"
   | "エレクトロニカ"
   | "ロック"
-  | "アニメ"
+  | "アニソン"
   | "ヒップホップ";
 
 export interface Work {
@@ -41,7 +41,7 @@ export interface Work {
   title: string;
   type: TagType[];
   style: TagStyle[];
-  genre: TagGenre[];
+  music: TagMusic[];
   // ビルド時にYouTube Data APIから取得したYouTube投稿日（ソート用）
   youtubePublishedAt?: string;
 }

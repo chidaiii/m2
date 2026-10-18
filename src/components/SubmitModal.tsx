@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { extractVideoId, getThumbnailUrl, getThumbnailFallbackUrl } from "@/lib/youtube";
-import { TAG_CATEGORIES } from "@/lib/tags";
+import { TAG_CATEGORIES, getTagLabel } from "@/lib/tags";
 import Modal from "./Modal";
 import Tag from "./Tag";
 import styles from "./SubmitModal.module.css";
@@ -14,7 +14,7 @@ interface Props {
 
 type TagState = Record<string, string[]>;
 
-const INITIAL_TAGS: TagState = { type: [], style: [], genre: [] };
+const INITIAL_TAGS: TagState = { type: [], style: [], music: [] };
 
 export default function SubmitModal({ onClose }: Props) {
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -28,7 +28,7 @@ export default function SubmitModal({ onClose }: Props) {
     !!videoId &&
     selectedTags.type.length > 0 &&
     selectedTags.style.length > 0 &&
-    selectedTags.genre.length > 0;
+    selectedTags.music.length > 0;
 
   const toggleTag = (category: string, tag: string) => {
     setSelectedTags((prev) => {
@@ -69,7 +69,7 @@ export default function SubmitModal({ onClose }: Props) {
           youtubeUrl,
           type: selectedTags.type,
           style: selectedTags.style,
-          genre: selectedTags.genre,
+          music: selectedTags.music,
         }),
       });
     } catch {
@@ -159,7 +159,7 @@ export default function SubmitModal({ onClose }: Props) {
                       {category.options.map((tag) => (
                         <Tag
                           key={tag}
-                          label={tag}
+                          label={getTagLabel(tag)}
                           isActive={(selectedTags[category.key] ?? []).includes(tag)}
                           onClick={() => toggleTag(category.key, tag)}
                           variant="on-accent"
